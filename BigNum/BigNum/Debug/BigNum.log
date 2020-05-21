@@ -1,0 +1,8 @@
+﻿  QInt.cpp
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(64,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(100,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(277,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(308,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(331,7): warning C4101: 'C': unreferenced local variable
+C:\Users\Thanh\source\repos\BigNum\BigNum\QInt.cpp(228): warning C4715: 'QInt::ConvertHexToBin': not all control paths return a value
+  BigNum.vcxproj -> C:\Users\Thanh\source\repos\BigNum\Debug\BigNum.exe
