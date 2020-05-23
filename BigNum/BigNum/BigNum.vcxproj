@@ -126,10 +126,12 @@
     <ClCompile Include="DataHanding.cpp" />
     <ClCompile Include="DataHanding.h" />
     <ClCompile Include="QInt.cpp" />
+    <ClCompile Include="Question.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QInt.h" />
+    <ClInclude Include="Question.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

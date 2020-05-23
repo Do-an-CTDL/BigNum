@@ -8,6 +8,17 @@ void QInt::InitZero() {
 	_zero._data[3] = 0;
 }
 
+
+//Khởi tạo bảng max
+void QInt::InitMAX() {
+
+	_max._data[0] = UINT_MAX;
+	_max._data[1] = UINT_MAX;
+	_max._data[2] = UINT_MAX;
+	_max._data[3] = UINT_MAX - pow(2, 31);
+
+}
+
 //Khởi tạo bảng min
 void QInt::InitMin() {
 
@@ -17,6 +28,25 @@ void QInt::InitMin() {
 	_min._data[3] = 0;
 }
 
+
+QInt::QInt(string a, int baseIn, int baseOut) {
+
+	//0: nhị phân
+	//1: dec
+	//2: hex
+	int checkBase; 
+
+	if (baseIn == 2)
+		checkBase = 0;
+	if (baseIn == 10)
+		checkBase = 1;
+	if (baseIn == 16)
+		checkBase = 2;
+
+	ConvertInputtoData(a, checkBase);
+
+	_base = baseOut;
+}
 
 // Hàm lấy bit tại vị tri pos
 	//	 Input là vị trí cần lấy bit
@@ -299,7 +329,7 @@ QInt QInt::operator~() {
 
 
 //Toán tử gán bằng
-QInt QInt::operator=(string a) {
+QInt QInt::operator =(string a) {
 
 	//0: nhị phân
 	//1: dec

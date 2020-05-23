@@ -27,9 +27,15 @@
     <ClCompile Include="DataHanding.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Question.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="QInt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Question.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,6 +4,10 @@
 using namespace std;
 
 
+const string MAX_QInt_str = "170141183460469231731687303715884105727";
+const string MIN_QInt_str = "-170141183460469231731687303715884105728";
+
+
 //Hàm loại chữ số 0 thừa ở đầu
 // Input là chuỗi cần loại bỏ
 // Output là chuỗi sau khi loại bỏ

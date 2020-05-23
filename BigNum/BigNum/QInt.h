@@ -18,16 +18,21 @@ class QInt {
 public:
 	static void InitZero();
 	static void InitMin();
-	static QInt _zero, _min;
+	static void InitMAX();
+	static QInt _zero, _min, _max;
 
 private:
 
 	unsigned int _data[Size_Num];
-	
+
+	//Cơ số biểu diễn cuối cùng
+	int _base;
 
 public:
 
-
+	//hàm khởi tạo 3 đối số
+	//chuỗi dữ liệu, base đầu vào, base đầu ra
+	QInt(string, int, int);
 
 	// Hàm lấy bit tại vị tri pos
 	//	 Input là vị trí cần lấy bit

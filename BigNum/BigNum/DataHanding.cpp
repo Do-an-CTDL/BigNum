@@ -1,5 +1,31 @@
 ﻿#include "DataHanding.h"
 
+
+bool isOverFlowDec(string x)
+{
+	if (x[0] != '-')
+	{
+		if (x.length() > MAX_QInt_str.length())
+			return true;
+		if (x.length() < MAX_QInt_str.length())
+			return false;
+		if (x > MAX_QInt_str)
+			return true;
+	}
+	if (x[0] == '-')
+	{
+		if (x.length() > MIN_QInt_str.length())
+			return true;
+		if (x.length() < MIN_QInt_str.length())
+			return false;
+		if (x > MIN_QInt_str)
+			return true;
+	}
+	return false;
+}
+
+
+
 //Hàm loại chữ số 0 thừa ở đầu
 // Input là chuỗi cần loại bỏ
 // Output là chuỗi sau khi loại bỏ
