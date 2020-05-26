@@ -1,14 +1,18 @@
-﻿#include "Question.h"
+﻿#pragma once
 
-QInt QInt::_min;
-QInt QInt::_zero;
-QInt QInt::_max;
+#include "Question.h"
+
+
+//QInt QInt::_min;
+//QInt QInt::_zero;
+//QInt QInt::_max;
 
 int main() {
 	
 	QInt::InitMin();
 	QInt::InitZero();
 	QInt::InitMAX();
+	
 
 	Input();
 	//QInt a;

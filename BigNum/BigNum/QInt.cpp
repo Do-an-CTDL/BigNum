@@ -1,4 +1,6 @@
-﻿#include "QInt.h"
+﻿#pragma once
+#include "QInt.h"
+#include "DataHanding.h"
 
 void QInt::InitZero() {
 
@@ -26,6 +28,7 @@ void QInt::InitMin() {
 	_min._data[1] = 0;
 	_min._data[2] = 0;
 	_min._data[3] = 0;
+
 }
 
 
@@ -58,7 +61,7 @@ bool QInt::GetBit(int pos) {
 	return (_data[pos / Size_charater] >> (pos % Size_charater)) & 1;
 }
 
-// Hàm cài bit vao vị trí pos
+// Hàm cài bit vào vị trí pos
 	//	Input là vị trí nạp bit
 void QInt::SetBit(bool ValuesBit, int pos) {
 
@@ -71,9 +74,7 @@ void QInt::SetBit(bool ValuesBit, int pos) {
 		_data[pos / Size_charater] = _data[pos / Size_charater] ^ (1 << (pos % Size_charater));
 	}
 	else
-		_data[pos / Size_charater] = (1 << (pos % Size_charater)) | _data[pos / Size_charater];
-	
-		
+		_data[pos / Size_charater] = (1 << (pos % Size_charater)) | _data[pos / Size_charater];	
 }
 
 //Chuyển sang số bù 2
@@ -85,60 +86,63 @@ void QInt::ConvertOpposite2() {
 
 //Hàm Chuyển từ dữ liệu đầu vào sang dữ liệu quy ước
 // Input là chuỗi string chứa dữ liệu và flag chỉ 1: chuỗi số nguyên, 0 : chuỗi nhị phân, 2: chuỗi hex
-void QInt::ConvertInputtoData(string a , int flag) {
+void QInt::ConvertInputtoData(string a, int flag) {
 
 
 	*this = _zero;
-	if (flag == 0) {
-		
-		for (int i = 0; i < a.length(); i++)
-		{
+	switch (flag) {
+	case 0:
+
+		for (int i = 0; i < a.length(); i++) {
 			SetBit(a[a.size() - i - 1] - '0', i);
 		}
+		break;
 
+	case 1:
+
+		//Kiem tra co la so am khong
+		bool checkNagative = 0;
+
+		if (a[0] == '-') {
+			checkNagative = 1;
+			a.erase(0, 1);
+		}
+
+		//lien tuc chia cho 2
+		int balance = 0; //so du
+		int pos = 0; // vị trí cần set bit
+		while (a != "") {
+			a = DivisionString2(a, balance);
+			SetBit(balance, pos++);
+		}
+
+		if (checkNagative) {
+			ConvertOpposite2();
+		}
+		break;
+
+	case 2:
+
+		//hex
+		int pos = 0; //vi tri set bit
+		for (int i = 0; i < a.size(); i++) {
+
+			string hextobin = ConvertHexToBin(a[i]);
+
+			for (int j = 3; j >= 0; j--) {
+
+				SetBit(hextobin[j] - '0', pos++);
+			}
+		}
+		break;
+
+	default:
+		break;
 	}
-	else
-		if (flag == 1){
-			//Kiem tra co la so am khong
-			bool checkNagative = 0;
-
-			if (a[0] == '-') {
-				checkNagative = 1;
-				a.erase(0, 1);
-			}
-
-			//lien tuc chia cho 2
-			int balance = 0; //so du
-			int pos = 0; // vị trí cần set bit
-			while (a != "" )
-			{	
-
-				a = DivisionString2(a, balance);
-				SetBit(balance, pos++);
-			}
-
-			if (checkNagative) {
-
-				ConvertOpposite2();
-			}
-
-
-		}
-		else {
-			//hex
-			int pos = 0; //vi tri set bit
-			for (int i = 0; i < a.size(); i++) {
-
-				string hextobin = ConvertHexToBin(a[i]);
-
-				for (int j = 3; j >= 0; j--) {
-
-					SetBit(hextobin[j] - '0', pos++);
-				}
-			}
-		}
- 
 }
+ 
+
+
 char QInt::ConvertDecToHex(string a) {
 
 	//chuyen chuoi thanh so de tien viec so sanh
@@ -329,28 +333,10 @@ QInt QInt::operator~() {
 
 
 //Toán tử gán bằng
-QInt QInt::operator =(string a) {
-
-	//0: nhị phân
-	//1: dec
-	//2: hex
-	int check = 0; 
-	for (int i = 0; i < a.size(); i++) {
-
-		if (a[i] == '-')
-			continue;
-		if (a[i] != '1' && a[i] != '0')
-			if (a[i] >= 'A' && a[i] <= 'F')
-				check = 2;
-			else
-				check = 1;
+void QInt::operator =(QInt a) {
+	for (int i = 0; i < Size_charater * Size_Num; i++) {
+		SetBit(a.GetBit(i), i);
 	}
-	
-
-
-	ConvertInputtoData(a, check);
-
-	return *this;
 }
 
 //Toán tử cộng
@@ -358,7 +344,6 @@ QInt QInt::operator + (QInt& a) {
 
 	bool  remember = 0;
 	int res_add;
-	QInt C;
 	for (int i = 0; i < Size_charater*Size_Num ; i++)
 	{
 		//lấy 2 bit tương ứng ở vị trí của nhau
@@ -375,11 +360,85 @@ QInt QInt::operator + (QInt& a) {
 			break;
 		}
 	}
-	
-
 	return *this;
 }
 
+//Toán tử trừ
+QInt QInt::operator- (QInt& a) {
+	a.ConvertOpposite2();
+	return (*this + a);
+}
+
+//Toán tử nhân
+//Thực hiện phép nhân M * Q
+unsigned int* QInt::operator*(QInt Q) {
+	unsigned int* res = new unsigned int[8];
+
+	QInt A = _zero;
+	QInt B = Q; //Lưu trữ lại đề phòng mất dữ liệu
+	bool Q0 = 0; //Bit cuối cùng của Q
+	bool Q1 = 0; //Bit nhớ
+	
+	QInt oposite = *this;
+	oposite.ConvertOpposite2(); //Số âm của M
+
+	for (int i = Size_charater * Size_Num; i > 0; i--) {
+		bool Q0 = B.GetBit(Size_charater * Size_Num - 1);
+		if (Q0 == 0) {
+			if (Q1 == 1) {
+				A = A + *this; //A += M 
+			}
+		}
+		else {
+			if (Q1 == 0) {
+				A = A + oposite; //A -= M
+			}
+		}
+		//Dịch bit số học mảng [A, Q, Q1]
+		Q1 = Q0;
+		B = B >> 1;
+		B.SetBit(A.GetBit(Size_charater * Size_Num - 1), 0);
+		A = A >> 1;
+		A.SetBit(A.GetBit(1), 0);
+	}
+	//Kết quả phép nhân là mảng [A, Q] có độ lớn là 256 bit
+	res[0] = A._data[0];
+	res[1] = A._data[1];
+	res[2] = A._data[2];
+	res[3] = A._data[3];
+	res[4] = B._data[0];
+	res[5] = B._data[1];
+	res[6] = B._data[2];
+	res[7] = B._data[3];
+
+	return res;
+}
+
+//Toán tử chia
+//Thực hiện phép tính M/Q 
+//M là số bị chia Dividend, Q là số chia divisor
+QInt QInt::operator/(QInt Q) {
+	QInt A = _zero;
+	QInt oposite = Q; //số đối của Q
+	oposite.ConvertOpposite2();
+	QInt B = *this; //Gán B bằng M để tránh mất dữ liệu
+
+	for (int i = Size_charater * Size_Num; i > 0; i--) {
+		A = A << 1;
+		A.SetBit(B.GetBit(0), Size_charater * Size_Num);
+		B = B << 1;
+		A = A + oposite; //A = A - M
+		if (A.GetBit(0) == 1) {
+			B.SetBit(0, Size_charater * Size_Num);
+			A = A + Q; // A = A + M
+		}
+		else {
+			B.SetBit(1, Size_charater * Size_Num);
+		}
+	}
+	//Kết quả phép chia là mảng B
+	return B;
+}
 
 //Toán tử and
 QInt QInt::operator&(QInt& a)
@@ -397,7 +456,6 @@ QInt QInt::operator&(QInt& a)
 	return *this;
 
 }
-
 
 //Toán tử or
 QInt QInt::operator | (QInt& a)
@@ -437,9 +495,12 @@ QInt QInt::operator ^ (QInt& a)
 QInt QInt::operator >>(int sl) {
 
 	QInt res = _zero;
-	for (int i = 0; i < Size_charater * Size_Num; i++)
+	/*for (int i = 0; i < sl; i++) {
+		res.SetBit(0, i);
+	}*/
+	for (int i = sl; i < Size_charater * Size_Num; i++)
 	{
-		res. SetBit(GetBit(i + sl), i );
+		res. SetBit(GetBit(i - sl), i );
 	}
 	return res;
 }
@@ -448,12 +509,13 @@ QInt QInt::operator >>(int sl) {
 QInt QInt::operator<<(int sl) {
 
 	QInt res = _zero;
-	for (int i = 0; i < Size_charater * Size_Num; i++)
-	{
-		SetBit(GetBit(Size_charater *Size_Num - 1 - i - sl), Size_charater * Size_Num - i - 1);
+	/*for (int i = Size_charater * Size_Num; i < sl; i--) {
+		res.SetBit(0, i);
+	}*/
+	for (int i = Size_charater * Size_Num - sl - 1; i >= 0; i--) {
+
+		res.SetBit(GetBit(i + sl), i);
 	}
-
-
 	return res;
 }
 

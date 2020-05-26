@@ -15,12 +15,6 @@ using namespace std;
 // Đối tượng của bigNum
 // 128 bit -> 4x 32 bit để quản lý
 class QInt {
-public:
-	static void InitZero();
-	static void InitMin();
-	static void InitMAX();
-	static QInt _zero, _min, _max;
-
 private:
 
 	unsigned int _data[Size_Num];
@@ -29,6 +23,11 @@ private:
 	int _base;
 
 public:
+	static void InitZero();
+	static void InitMin();
+	static void InitMAX();
+	static QInt _zero, _min, _max;
+
 
 	//hàm khởi tạo 3 đối số
 	//chuỗi dữ liệu, base đầu vào, base đầu ra
@@ -50,7 +49,7 @@ public:
 	// Input là chuỗi string chứa dữ liệu và flag chỉ 1: chuỗi số nguyên, 0 : chuỗi nhị phân
 	void ConvertInputtoData(string, int);
 
-	//Hàm chuyển từ hệ 10 sang hệ 16
+	//Hàm chuyển từ hệ 2 sang hệ 16
 	// Input là đối tượng cần chuyển
 	// output là chuỗi string hệ 16
 
@@ -65,15 +64,24 @@ public:
 	// Chuỗi hex đã được đưa vào data bây giờ chỉ cần chuyển theo data là xong
 	string HexToDec();
 
-
+	//Chuyển chuỗi Bin sang Hex
 	//-------------------Toán tử------------------------//
 	QInt operator ~();
 
 	//Toán tử gán bằng mặc định là chỉ gán bằng chuỗi nhị phân và dec
-	QInt operator = (string);
+	void operator = (QInt);
 
 	//Toán tử + 2 số QInt
 	QInt operator +(QInt&);
+
+	//Toán tử - 2 số QInt
+	QInt operator -(QInt&);
+
+	//Toán tử * 2 số QInt
+	unsigned int* operator* (QInt);
+
+	//Toán tử / 2 số QInt
+	QInt operator/(QInt);
 
 	//Toán tử and
 	QInt operator & (QInt&);
@@ -96,6 +104,9 @@ public:
 	//------------PHÉP XOAY ROR VÀ ROL-------------------//
 	QInt ROR();
 	QInt ROL();
+
+	
+	
 	//------------KẾT THÚC PHÉP XOAY BIT------------------//
 };
 
