@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "QInt.h"
-#include "DataHanding.h"
 
 void QInt::InitZero() {
 
@@ -22,14 +21,32 @@ void QInt::InitMAX() {
 }
 
 //Khởi tạo bảng min
-void QInt::InitMin() {
+void QInt::InitOne() {
 
-	_min._data[0] = 1;
-	_min._data[1] = 0;
-	_min._data[2] = 0;
-	_min._data[3] = 0;
+	_one._data[0] = 1;
+	_one._data[1] = 0;
+	_one._data[2] = 0;
+	_one._data[3] = 0;
 
 }
+
+
+//Khơi tạo tham số mặc định
+QInt::QInt() {
+
+	_data[0] = 0;
+	_data[1] = 0;
+	_data[2] = 0;
+	_data[3] = 0;
+	_base = 2;
+}
+
+//Lấy hệ số đích
+int QInt::GetBase() {
+
+	return _base;
+}
+
 
 
 QInt::QInt(string a, int baseIn, int baseOut) {
@@ -37,7 +54,7 @@ QInt::QInt(string a, int baseIn, int baseOut) {
 	//0: nhị phân
 	//1: dec
 	//2: hex
-	int checkBase; 
+	int checkBase = 0; 
 
 	if (baseIn == 2)
 		checkBase = 0;
@@ -81,7 +98,7 @@ void QInt::SetBit(bool ValuesBit, int pos) {
 void QInt::ConvertOpposite2() {
 
 	~*this;
-	*this =  *this + _min;
+	*this =  *this + _one;
 }
 
 //Hàm Chuyển từ dữ liệu đầu vào sang dữ liệu quy ước
@@ -90,16 +107,16 @@ void QInt::ConvertInputtoData(string a, int flag) {
 
 
 	*this = _zero;
-	switch (flag) {
-	case 0:
 
-		for (int i = 0; i < a.length(); i++) {
-			SetBit(a[a.size() - i - 1] - '0', i);
-		}
-		break;
+	if (flag == 0) {
 
-	case 1:
+			for (int i = 0; i < a.length(); i++) {
+				SetBit(a[a.size() - i - 1] - '0', i);
+			}
+			
+	}
 
+	if (flag == 1) {
 		//Kiem tra co la so am khong
 		bool checkNagative = 0;
 
@@ -119,13 +136,13 @@ void QInt::ConvertInputtoData(string a, int flag) {
 		if (checkNagative) {
 			ConvertOpposite2();
 		}
-		break;
+	}
 
-	case 2:
+	if (flag == 2){
 
 		//hex
 		int pos = 0; //vi tri set bit
-		for (int i = 0; i < a.size(); i++) {
+		for (int i = a.size() - 1; i >=0; i--) {
 
 			string hextobin = ConvertHexToBin(a[i]);
 
@@ -134,16 +151,12 @@ void QInt::ConvertInputtoData(string a, int flag) {
 				SetBit(hextobin[j] - '0', pos++);
 			}
 		}
-		break;
-
-	default:
-		break;
 	}
 }
  
 
 
-char QInt::ConvertDecToHex(string a) {
+char QInt::ConvertBinToHex(string a) {
 
 	//chuyen chuoi thanh so de tien viec so sanh
 	int x = atoi(a.c_str());
@@ -259,7 +272,52 @@ string QInt::ConvertHexToBin(char x)
 		break;
 	}
 
+	return "0";
 }
+
+
+//Hàm chuyển từ hệ 10 sang hệ 2
+	//	Input là đối tương cần chuyển
+	//	output là chuỗi string hệ 2
+string QInt::DecToBin() {
+
+	string res;
+	for (int i = 0; i < Size_Num * Size_charater; i++) {
+
+		res = char(GetBit(i) + '0') + res;
+	}
+
+	res = Ease0InHead(res);
+
+	return res;
+}
+
+
+//Hàm chuyển từ hệ 2 sang hệ 10
+	//	Input là đối tương cần chuyển
+	//	output là chuỗi string hệ 10
+string QInt::BinToDec() {
+
+	bool sign = 0;
+	if (GetBit(Size_charater * Size_Num - 1)) {
+		sign = 1;
+		ConvertOpposite2();
+	}
+
+
+	string res;
+	for (int i = 0; i <  Size_Num; i++)
+	{
+		res = AdditionString(res, MulString(String(_data[i]), Power("2", Size_charater * i)));
+	}
+
+	if (sign)
+		res = "-" + res;
+
+	return res;
+}
+
+
 
 //Hàm chuyển từ hệ 10 sang hệ 16
 	// Input là đối tượng cần chuyển
@@ -282,14 +340,47 @@ string QInt::DecToHex() {
 					tmp._data[i] >>= 1;
 				}
 			}
-			char Get10to16 = ConvertDecToHex(Get4bit);
+			char Get10to16 = ConvertBinToHex(Get4bit);
 			Res = Get10to16 + Res;
 		}
 
 
 	}
 
-	cout << Res;
+
+	return Res;
+}
+
+//Chuyển binary sang hex
+	//	Vì data được convert về gốc => làm tương tư dec to hex
+	// Input là đối tượng cần chuyển
+	// output là chuỗi string hệ 16
+string QInt::BinToHex()
+{
+	
+	QInt tmp = *this;
+	string Res;
+	for (int i = 0; i < Size_Num; i++) {
+
+		//lay het so bit 
+		while (tmp._data[i]) {
+
+			//Lay 4 bit lien tiep
+			string Get4bit;
+			for (int j = 0; j < 4; j++) {
+
+				if (tmp._data[i]) {
+					Get4bit = char(int(tmp.GetBit(i * Size_charater) + '0')) + Get4bit;
+					tmp._data[i] >>= 1;
+				}
+			}
+			char Get10to16 = ConvertBinToHex(Get4bit);
+			Res = Get10to16 + Res;
+		}
+
+
+	}
+
 
 	return Res;
 }
@@ -317,6 +408,14 @@ string QInt::HexToDec() {
 	return "0";
 }
 
+
+//Chuyển chuỗi hex sang bin
+	// Chuỗi hex đã được đưa vào data bây giờ chỉ cần chuyển theo data là ra bin
+	// nên thuật toán y hệt như dec to bin
+string QInt::HexToBin() {
+
+	return DecToBin();
+}
 //------------------------------TOÁN TỬ------------------------------//
 
 //Toán tử not
@@ -360,6 +459,16 @@ QInt QInt::operator + (QInt& a) {
 			break;
 		}
 	}
+
+	//Kiem tra du
+	if (remember != 0) {
+		_data[0] = 0;
+		_data[1] = 0;
+		_data[2] = 0;
+		_data[3] = 0;
+
+	}
+
 	return *this;
 }
 
@@ -500,21 +609,22 @@ QInt QInt::operator >>(int sl) {
 	}*/
 	for (int i = sl; i < Size_charater * Size_Num; i++)
 	{
-		res. SetBit(GetBit(i - sl), i );
+		res. SetBit(GetBit(i), i - sl);
 	}
 	return res;
 }
 
-//Toán Tử dịch trái
+//Toán Tử dịch trái
 QInt QInt::operator<<(int sl) {
 
 	QInt res = _zero;
 	/*for (int i = Size_charater * Size_Num; i < sl; i--) {
 		res.SetBit(0, i);
 	}*/
-	for (int i = Size_charater * Size_Num - sl - 1; i >= 0; i--) {
 
-		res.SetBit(GetBit(i + sl), i);
+	for (int i = 0; i < Size_charater * Size_Num; i++)
+	{
+		res.SetBit(GetBit(Size_charater * Size_Num - 1 - i - sl), Size_charater * Size_Num - 1 - i);
 	}
 	return res;
 }

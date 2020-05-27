@@ -33,6 +33,8 @@ string Ease0InHead(string a) {
 
 
 	int i = 0;
+	if (a[0] == '-')
+		i = 1;
 	while (i < a.size()) {
 
 		if (a[i] == '0')
@@ -77,27 +79,50 @@ string DivisionString2(string a, int& balance) {
 
 
 
-string MulString2(string a) {
+string MulString(string a, string b) {
 
+
+
+	//nếu 1 trong 2 = 0 thì kq = 0
+	if (a == "" || b == "")
+		return "0";
+
+
+	if (a == "1")
+		return b;
+	if (b == "1")
+		return a;
 
 	a = Ease0InHead(a);
-	string remember;
-	string Res;
+	a = Ease0InHead(b);
+	
+	string res = "0";
 
-	for (int i = a.size() - 1; i >= 0; i--) {
+	int sizeA = a.size();
+	int sizeB = b.size();
+	int j;
 
-		remember += a[i];
-		Res += (stoi(remember) * 2 )% 10 + '0';
-		remember = (stoi(remember) * 2)/10  + '0'; //Nhớ
+	string tmp = "0", tmp2 = "0";
 
-		if (remember == "0") //Nếu dư 0
-			remember = "";
+	for (int iB = b.size() - 1; iB >= 0; iB--){
+		j = tmp.length() - 1;
+		for (int iA = a.size() - 1; iA >= 0; iA--){
+			unsigned int mul = tmp[j] - '0' + (a[iA] - '0') * (b[iB] - '0');
+			tmp[j++] = (mul % 10) + '0';
+			tmp = char((mul / 10) + '0') + tmp;
+		}
+
+		/*for (int i = 0; i < tmp.size() / 2; i++){
+			swap(tmp[i], tmp[tmp.length() - i - 1]);
+		}*/
+		res = AdditionString(res, tmp);
+		tmp = tmp2 + "0";
+		tmp2 = tmp;
 	}
 
-	//Xóa những kí tự 0 thừa ở đầu
-	a = Ease0InHead(a);
 
-	return Res;
+	return res;
+
 }
 
 //Hàm cộng hai chuỗi số thực lớn không âm
@@ -139,17 +164,55 @@ string AdditionString(string A, string B)
 		else
 			result = to_string(sum / 10) + result;
 	}
+
+	result = Ease0InHead(result);
+
 	return result;
 }
 
 
-//Hàm Nhập dữ liệu
-void InputData() {
+//Hàm mũ 
+//Input là số cần mũ và cơ số
+//output là đáp án sau khi mũ
+string Power(string a, int x) {
+
+	a = Ease0InHead(a);
+	if (x == 0)
+		return "1";
+	string res = "1";
+
+	for (int i = 0; i < x; i++) {
+		//res = Ease0InHead(res);
+		res = MulString(res, a);
+	}
+	return res;
+}
 
 
-	string a;
-	getline(cin, a);
+//Hàm chuyển từ số sang chuỗi
+string String(unsigned int a) {
+
+	string tmp;
+	while (a) {
+
+		tmp = char(a % 10 + '0') + tmp;
+		a /= 10;
+	}
+
+	return tmp;
+}
 
 
+//hàm chuyển string sang int
+int Int(string a) {
 
+	int res = 0;
+	int x = 1;
+	for (int i = int(a.size() - 1); i >= 0; i--){
+		
+		res += (a[i] - '0') * x;
+		x *= 10;
+	}
+
+	return res;
 }

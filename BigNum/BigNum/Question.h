@@ -21,7 +21,8 @@ bool checkQuestion(string);
 int CheckOperand(string);
 
 
-
+//Chuyển Từ QInt sang hệ số đích (2, 10, 16)
+string ConvertQIntToBase(QInt );
 
 
 

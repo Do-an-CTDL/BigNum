@@ -5,7 +5,7 @@
 void Input() {
 
 	ifstream In("input.txt");
-
+	ofstream Out("output.txt");
 	while (!In.eof()) {
 
 		string s;
@@ -14,10 +14,12 @@ void Input() {
 
 
 		res = Solve(s);
-
+		Out << res << "\n";
+		cout << res << "\n";
 	}
 
-
+	In.close();
+	Out.close();
 
 }
 
@@ -64,6 +66,22 @@ int CheckOperand(string  a) {
 	return 0;
 }
 
+string ConvertQIntToBase(QInt a)
+{
+	string s;
+	int _base = a.GetBase();
+
+
+	if (_base == 2)
+		s = a.DecToBin();
+	if (_base == 10)
+		s = a.BinToDec();
+	if (_base == 16)
+		s = a.BinToHex();
+
+	return s;
+}
+
 
 //Hàm xử lý đầu vào và trả về kết quả
 string Solve(string s) {
@@ -89,6 +107,12 @@ string Solve(string s) {
 	if (CountQuestion == 2) {	
 
 		Out = atoi(Q2.c_str());
+
+		string x;
+		ss >> x;
+		x = Ease0InHead(x);
+		QInt a(x, atoi(Q1.c_str()), atoi(Q2.c_str()));
+		return ConvertQIntToBase(a);
 	}
 	else {
 
@@ -108,7 +132,9 @@ string Solve(string s) {
 		//Đọc dữ liệu
 		string x;
 		ss >> x;
-		QInt a(x, atoi(Q1.c_str()), atoi(Q2.c_str()));
+
+		x = Ease0InHead(x);
+		QInt a(x, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
 		if (operand == 2)
 			a = ~a;
@@ -117,19 +143,60 @@ string Solve(string s) {
 		if (operand == 4)
 			a.ROR();
 
-		
+		return ConvertQIntToBase(a);
 	}
 
 	//Trường hợp là các toán tử cộng trừ nhân chia 
 	string Q3;
 	ss >> Q3;
-	int operand = CheckOperand(Q3);
+	operand = CheckOperand(Q3);
 	if (operand != 0 && operand > 4) {
 
+		QInt a(Q2, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
+		string Q4;// Đối số thứ 4
+		ss >> Q4;
+		Q4 = Ease0InHead(Q4);
+		if (operand == 5 || operand == 6) {
+
+			int hs = Int(Q4);
+			if (hs > 128)
+				a = QInt::_zero;
+			else {
+
+				if (operand == 5)
+					a = a >> hs;
+				else
+					a = a << hs;
+			}
+		}
+
+		QInt b(Q4, atoi(Q1.c_str()), atoi(Q1.c_str()));
+		if (operand == 7) {
+
+			a = a + b;
+		}
+
+
+		if (operand == 8) {
+
+			a = a - b;
+		}
+
+		if (operand == 9) {
+
+		
+		}
+
+		if (operand == 10) {
+
+			a = a / b;
+		}
+
+		return ConvertQIntToBase(a);
 	}
 
-
-	return "";
+	
+	return "0";
 }
 
