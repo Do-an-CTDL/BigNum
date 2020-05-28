@@ -30,7 +30,7 @@ public:
 	static void InitMAX();
 	
 
-	//Khơi tạo tham số mặc định
+	//Khởi tạo tham số mặc định
 	QInt();
 
 	//lấy hệ số đích
@@ -106,12 +106,13 @@ public:
 
 	//Toán tử + 2 số QInt
 	QInt operator +(QInt&);
+	QInt Add(QInt&);
 
 	//Toán tử - 2 số QInt
 	QInt operator -(QInt&);
 
 	//Toán tử * 2 số QInt
-	unsigned int* operator* (QInt);
+	QInt operator* (QInt);
 
 	//Toán tử / 2 số QInt
 	QInt operator/(QInt);

@@ -439,8 +439,32 @@ void QInt::operator =(QInt a) {
 }
 
 //Toán tử cộng
-QInt QInt::operator + (QInt& a) {
+QInt QInt::Add(QInt& a) {
+	QInt result = _zero;
+	bool  remember = 0;
+	int res_add;
+	for (int i = 0; i < Size_charater * Size_Num; i++)
+	{
+		//lấy 2 bit tương ứng ở vị trí của nhau
+		bool bitofa = a.GetBit(i);
+		bool bitofb = GetBit(i);
+		res_add = int(bitofa) + int(bitofb) + int(remember);
+		switch (res_add)
+		{
+		case 3: remember = 1; result.SetBit(1, i); break;
+		case 2: remember = 1; result.SetBit(0, i); break;
+		case 1: remember = 0; result.SetBit(1, i); break;
+		case 0: remember = 0; result.SetBit(0, i); break;
+		default:
+			break;
+		}
+	}
+	return result;
+}
 
+QInt QInt::operator + (QInt& a) {
+	 
+	QInt result = _zero;
 	bool  remember = 0;
 	int res_add;
 	for (int i = 0; i < Size_charater*Size_Num ; i++)
@@ -451,10 +475,10 @@ QInt QInt::operator + (QInt& a) {
 		res_add = int(bitofa) + int(bitofb) + int(remember);
 		switch (res_add)
 		{
-		case 3: remember = 1; SetBit(1, i); break;
-		case 2: remember = 1; SetBit(0, i); break;
-		case 1: remember = 0; SetBit(1, i); break;
-		case 0: remember = 0; SetBit(0, i); break;
+		case 3: remember = 1; result.SetBit(1, i); break;
+		case 2: remember = 1; result.SetBit(0, i); break;
+		case 1: remember = 0; result.SetBit(1, i); break;
+		case 0: remember = 0; result.SetBit(0, i); break;
 		default:
 			break;
 		}
@@ -462,14 +486,14 @@ QInt QInt::operator + (QInt& a) {
 
 	//Kiem tra du
 	if (remember != 0) {
-		_data[0] = 0;
-		_data[1] = 0;
-		_data[2] = 0;
-		_data[3] = 0;
+		result._data[0] = 0;
+		result._data[1] = 0;
+		result._data[2] = 0;
+		result._data[3] = 0;
 
 	}
 
-	return *this;
+	return result;
 }
 
 //Toán tử trừ
@@ -480,8 +504,8 @@ QInt QInt::operator- (QInt& a) {
 
 //Toán tử nhân
 //Thực hiện phép nhân M * Q
-unsigned int* QInt::operator*(QInt Q) {
-	unsigned int* res = new unsigned int[8];
+QInt QInt::operator*(QInt Q) {
+	QInt res = _zero;
 
 	QInt A = _zero;
 	QInt B = Q; //Lưu trữ lại đề phòng mất dữ liệu
@@ -495,12 +519,12 @@ unsigned int* QInt::operator*(QInt Q) {
 		bool Q0 = B.GetBit(Size_charater * Size_Num - 1);
 		if (Q0 == 0) {
 			if (Q1 == 1) {
-				A = A + *this; //A += M 
+				A = A.Add(*this); //A += M 
 			}
 		}
 		else {
 			if (Q1 == 0) {
-				A = A + oposite; //A -= M
+				A = A.Add(oposite); //A -= M
 			}
 		}
 		//Dịch bit số học mảng [A, Q, Q1]
@@ -511,14 +535,37 @@ unsigned int* QInt::operator*(QInt Q) {
 		A.SetBit(A.GetBit(1), 0);
 	}
 	//Kết quả phép nhân là mảng [A, Q] có độ lớn là 256 bit
-	res[0] = A._data[0];
-	res[1] = A._data[1];
-	res[2] = A._data[2];
-	res[3] = A._data[3];
-	res[4] = B._data[0];
-	res[5] = B._data[1];
-	res[6] = B._data[2];
-	res[7] = B._data[3];
+	//Check tràn số
+	int check = 0;
+	for (int i = 0; i < 4; i++) {
+		if (A._data[i] == 0) {
+			check++;
+		}
+		if (Q._data[i] == 0) {
+			check++;
+		}
+	}
+	if (check > 4) {
+		res._data[0] = 0;
+		res._data[1] = 0;
+		res._data[2] = 0;
+		res._data[3] = 0;
+	}
+	else {
+		int check = 3;
+		for (int i = 3; i >= 0; i--) {
+			if (Q._data[i] != 0) {
+				res._data[i] = Q._data[i];
+				check--;
+			}
+		}
+		for (int i = 3; i >= 0; i--) {
+			if (A._data[i] != 0) {
+				res._data[check] = A._data[i];
+				check--;
+			}
+		}
+	}
 
 	return res;
 }
@@ -536,10 +583,10 @@ QInt QInt::operator/(QInt Q) {
 		A = A << 1;
 		A.SetBit(B.GetBit(0), Size_charater * Size_Num);
 		B = B << 1;
-		A = A + oposite; //A = A - M
+		A = A.Add(oposite); //A = A - M
 		if (A.GetBit(0) == 1) {
 			B.SetBit(0, Size_charater * Size_Num);
-			A = A + Q; // A = A + M
+			A = A.Add(Q); // A = A + M
 		}
 		else {
 			B.SetBit(1, Size_charater * Size_Num);
