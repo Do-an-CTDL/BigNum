@@ -537,12 +537,17 @@ QInt QInt::operator*(QInt Q) {
 	//Kết quả phép nhân là mảng [A, Q] có độ lớn là 256 bit
 	//Check tràn số
 	int check = 0;
-	for (int i = 0; i < 4; i++) {
-		if (A._data[i] == 0) {
-			check++;
+	int posA, posQ = 0;
+	for (posA; posA < 4; posA++) {
+		if (A._data[posA] != 0) {
+			check += 3 - posA;
+			break;
 		}
-		if (Q._data[i] == 0) {
-			check++;
+	}
+	for (int posQ = 0; posQ < 4; posQ++) {
+		if (Q._data[posQ] != 0) {
+			check += 3 - posQ;
+			break;
 		}
 	}
 	if (check > 4) {
@@ -553,17 +558,13 @@ QInt QInt::operator*(QInt Q) {
 	}
 	else {
 		int check = 3;
-		for (int i = 3; i >= 0; i--) {
-			if (Q._data[i] != 0) {
-				res._data[i] = Q._data[i];
-				check--;
-			}
+		for (int i = 3; i >= posA; i--) {
+			res._data[i] = Q._data[i];
+			check--;
 		}
-		for (int i = 3; i >= 0; i--) {
-			if (A._data[i] != 0) {
-				res._data[check] = A._data[i];
-				check--;
-			}
+		for (int i = 3; i >= posQ; i--) {
+			res._data[check] = A._data[i];
+			check--;
 		}
 	}
 
