@@ -50,7 +50,17 @@ QInt::QInt() {
 	_base = 2;
 }
 
+int QInt::GetnBit() {
 
+	int dem = 0;
+	for (int i = Size_charater * Size_Num - 1; i >= 0; i--)
+		if (GetBit(i))
+			break;
+		else
+			dem++;
+
+	return Size_charater * Size_Num - dem;
+}
 
 
 //Lấy hệ số đích
@@ -456,6 +466,8 @@ bool QInt::operator ==(QInt a) {
 //Toán tử cộng
 QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 	QInt result = _zero;
+	result._base = a._base;
+
 	bool  remember = 0;
 	int res_add;
 	for (int i = 0; i < Size_charater * Size_Num; i++)
@@ -481,6 +493,9 @@ QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 QInt QInt::operator + (QInt& a) {
 	 
 	QInt result = _zero;
+	result._base = _base;
+
+
 	bool  remember = 0;
 	int res_add;
 	for (int i = 0; i < Size_charater*Size_Num ; i++)
@@ -523,7 +538,10 @@ QInt QInt::operator- (QInt& a) {
 QInt QInt::operator*(QInt b) {
 	bool remember = 0; //Bit nhớ phụ
 	QInt A = _zero; //Mảng nhớ phụ
+
 	QInt res = _zero; //Kết quả phép nhân
+	A._base = res._base = _base;
+
 	bool sign = 0; //Bit dấu 
 	//Check dấu kết quả
 	if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
@@ -540,30 +558,29 @@ QInt QInt::operator*(QInt b) {
 		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
 	}
 
+	int demNhan = 0; // Dem so lan da nhan
 	//Bắt đầu thực hiện phép nhân
 	for (int i = Size_charater * Size_Num; i > 0; i--) {
 		bool tmp = Q.GetBit(0); //Dùng để lưu trữ bit phải nhất của Q
-		if (!tmp) {
-			A = Add(A, M, remember); //Nếu bit cuối của Q = 1 thì lấy [A+M] -> [remember,A]
+		if (tmp) {
+			QInt Tmp = M;
+			Tmp = Tmp << demNhan;
+			A = Add(A, Tmp, remember); //Nếu bit cuối của Q = 1 thì lấy [A+M] -> [remember,A]
 		}
 		Q = Q.SHR(1);
-		Q.SetBit(A.GetBit(0), Size_charater * Size_Num - 1); //Lấy bit 0 của A gán vào bit 127 của Q
-		A = A.SHR(1);
-		A.SetBit(remember, Size_charater * Size_Num - 1); //Lấy gtr của bit nhớ gán vào bit 127 của A
-		remember = 0;
+		demNhan++;
 	}
 
 	//Check tràn số
-	//Kết quả phép nhân chính là mảng [remember, A, Q]
-	if (A == _zero && remember == 0) {
+	/*if (A == _zero && remember == 0) {
 		res = Q;
-	}
+	}*/
 	//Kiểm tra dấu của phép nhân
 	if (sign == 1) {
-		res.ConvertOpposite2();
+		A.ConvertOpposite2();
 	}
 
-	return res;
+	return A;
 
 }
 
@@ -683,6 +700,9 @@ QInt QInt::operator ^ (QInt& a)
 QInt QInt::operator >>(int sl) {
 
 	QInt res = _zero;
+	res._base = _base;
+
+
 	if (sl >= Size_charater * Size_Num) {
 		return res;
 	}
@@ -714,6 +734,8 @@ QInt QInt::operator >>(int sl) {
 
 QInt QInt::SHR(int sl) {
 	QInt res = _zero;
+	res._base = _base;
+
 
 	//Nếu dịch từ 128 bit trở lên thì kết quả trả về là dãy bit 0
 	if (sl >= Size_charater * Size_Num) {

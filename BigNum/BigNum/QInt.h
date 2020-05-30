@@ -33,7 +33,8 @@ public:
 	//Khởi tạo tham số mặc định
 	QInt();
 
-	
+	//Lấy số bit hiện tại của số
+	int GetnBit();
 
 	//lấy hệ số đích
 	int GetBase();

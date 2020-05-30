@@ -4,6 +4,7 @@
 QInt QInt::_one;
 QInt QInt::_zero;
 QInt QInt::_max;
+QInt QInt::_min;
 
 int main() {
 	
