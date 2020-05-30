@@ -434,15 +434,18 @@ QInt QInt::operator~() {
 }
 
 
-//Toán tử gán bằng
-void QInt::operator =(QInt a) {
-	for (int i = 0; i < Size_charater * Size_Num; i++) {
-		SetBit(a.GetBit(i), i);
+//Toán tử bằng
+bool QInt::operator ==(QInt a) {
+	for (int i = 0; i < Size_Num; i++) {
+		if (_data[i] != a._data[i]) {
+			return 0;
+		}
 	}
+	return 1;
 }
 
 //Toán tử cộng
-QInt QInt::Add(QInt& a) {
+QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 	QInt result = _zero;
 	bool  remember = 0;
 	int res_add;
@@ -450,7 +453,7 @@ QInt QInt::Add(QInt& a) {
 	{
 		//lấy 2 bit tương ứng ở vị trí của nhau
 		bool bitofa = a.GetBit(i);
-		bool bitofb = GetBit(i);
+		bool bitofb = b.GetBit(i);
 		res_add = int(bitofa) + int(bitofb) + int(remember);
 		switch (res_add)
 		{
@@ -462,6 +465,7 @@ QInt QInt::Add(QInt& a) {
 			break;
 		}
 	}
+	bit = remember;
 	return result;
 }
 
@@ -488,13 +492,13 @@ QInt QInt::operator + (QInt& a) {
 	}
 
 	//Kiem tra du
-	/*if (remember != 0) {
+	if (remember != 0) {
 		result._data[0] = 0;
 		result._data[1] = 0;
 		result._data[2] = 0;
 		result._data[3] = 0;
 
-	}*/
+	}
 
 	return result;
 }
@@ -507,90 +511,114 @@ QInt QInt::operator- (QInt& a) {
 
 //Toán tử nhân
 //Thực hiện phép nhân M * Q
-QInt QInt::operator*(QInt Q) {
-	QInt res = _zero;
-
-	QInt A = _zero;
-	QInt B = Q; //Lưu trữ lại đề phòng mất dữ liệu
-	bool Q0 = 0; //Bit cuối cùng của Q
-	bool Q1 = 0; //Bit nhớ
-	
-	QInt oposite = *this;
-	oposite.ConvertOpposite2(); //Số âm của M
-
-	
-	for (int i = 0; i < Size_charater * Size_Num; i++) {
-		bool Q0 = B.GetBit(0);
-		if (Q0 == 0) {
-			if (Q1 == 1) {
-				A = A.Add(*this); //A += M 
-			}
-		}
-		else {
-			if (Q1 == 0) {
-				A = A.Add(oposite); //A -= M
-			}
-			
-		}
-		//Dịch bit số học mảng [A, Q, Q1]
-		Q1 = Q0;
-		bool a = A.GetBit(0);
-		bool a1 = A.GetBit(Size_charater * Size_Num - 1);
-		B = B >> 1;
-		A = A >> 1;
-		B.SetBit(a, Size_charater * Size_Num - 1);
-		A.SetBit(a1, Size_charater * Size_Num - 1);
+QInt QInt::operator*(QInt b) {
+	bool remember = 0; //Bit nhớ phụ
+	QInt A = _zero; //Mảng nhớ phụ
+	QInt res = _zero; //Kết quả phép nhân
+	bool sign = 0; //Bit dấu 
+	//Check dấu kết quả
+	if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
+		sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
 	}
-	//Kết quả phép nhân là mảng [A, Q] có độ lớn là 256 bit
+
+	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
+	QInt M = *this; 
+	QInt Q = b;
+	if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
+		M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+	}
+	if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
+		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+	}
+
+	//Bắt đầu thực hiện phép nhân
+	for (int i = Size_charater * Size_Num; i > 0; i--) {
+		bool tmp = Q.GetBit(0); //Dùng để lưu trữ bit phải nhất của Q
+		if (!tmp) {
+			A = Add(A, M, remember); //Nếu bit cuối của Q = 1 thì lấy [A+M] -> [remember,A]
+		}
+		Q = Q.SHR(1);
+		Q.SetBit(A.GetBit(0), Size_charater * Size_Num - 1); //Lấy bit 0 của A gán vào bit 127 của Q
+		A = A.SHR(1);
+		A.SetBit(remember, Size_charater * Size_Num - 1); //Lấy gtr của bit nhớ gán vào bit 127 của A
+		remember = 0;
+	}
+
 	//Check tràn số
-	int check = 0;
-	int posA = 0, posQ = 0;
-	for (posA = 0; posA < 4; posA++) {
-		if (A._data[posA] != 0) {
-			check += 3 - posA;
-			break;
-		}
+	//Kết quả phép nhân chính là mảng [remember, A, Q]
+	if (A == _zero && remember == 0) {
+		res = Q;
 	}
-	for (int posQ = 0; posQ < 4; posQ++) {
-		if (Q._data[posQ] != 0) {
-			check += 3 - posQ;
-			break;
-		}
-	}
-	if (check > 4) {
-		res._data[0] = 0;
-		res._data[1] = 0;
-		res._data[2] = 0;
-		res._data[3] = 0;
+	//Kiểm tra dấu của phép nhân
+	if (sign == 1) {
+		res.ConvertOpposite2();
 	}
 
-	return B;
+	return res;
+
 }
 
 //Toán tử chia
-//Thực hiện phép tính M/Q 
-//M là số bị chia Dividend, Q là số chia divisor
-QInt QInt::operator/(QInt Q) {
-	QInt A = _zero;
-	QInt oposite = Q; //số đối của Q
+//Thực hiện phép tính Q/M 
+//Q là số bị chia Dividend, M là số chia divisor
+QInt QInt::operator/(QInt b) {
+	//Kiểm tra TH tràn
+	//Khi -128/-1 = 128 => Tràn số
+	//Tạo số -128
+	QInt check_128 = _zero;
+	check_128.SetBit(1, Size_charater * Size_Num - 1);
+	//Tạo số -1
+	QInt check_1 = _zero;
+	check_1.SetBit(1, 0);
+	check_1.ConvertOpposite2();
+
+	if (*this == check_128 && b == check_1) {
+		QInt res = _zero;
+		return res;
+	}
+
+	bool sign = 0; //Bit dấu 
+	//Check dấu kết quả
+	if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
+		sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
+	}
+
+	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
+	QInt Q = *this;
+	QInt M = b;
+	if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
+		M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+	}
+	if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
+		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+	}
+
+	QInt A = _zero; //Mảng nhớ hỗ trợ chia
+	bool tmp; //Bit nhớ (không sử dụng)
+	QInt oposite = M; //số đối của M
 	oposite.ConvertOpposite2();
-	QInt B = *this; //Gán B bằng M để tránh mất dữ liệu
+	
 
 	for (int i = Size_charater * Size_Num; i > 0; i--) {
 		A = A << 1;
-		A.SetBit(B.GetBit(0), Size_charater * Size_Num - 1);
-		B = B << 1;
-		A = A.Add(oposite); //A = A - M
-		if (A.GetBit(0) == 1) {
-			B.SetBit(0, Size_charater * Size_Num);
-			A = A.Add(Q); // A = A + M
+		A.SetBit(Q.GetBit(Size_charater * Size_Num - 1), 0);
+		M = M << 1;
+		A = Add(A, oposite, tmp); //A = A - M
+		if (A.GetBit(Size_charater * Size_Num - 1) == 1) {
+			Q.SetBit(0, 0);
+			A = Add(A, M, tmp); // A = A + M
 		}
 		else {
-			B.SetBit(1, Size_charater * Size_Num);
+			Q.SetBit(1, 0);
 		}
 	}
 	//Kết quả phép chia là mảng B
-	return B;
+	//Kiểm tra dấu của phép nhân
+	if (sign == 1) {
+		Q.ConvertOpposite2();
+	}
+	
+	return Q;
 }
 
 //Toán tử and
@@ -648,10 +676,22 @@ QInt QInt::operator ^ (QInt& a)
 QInt QInt::operator >>(int sl) {
 
 	QInt res = _zero;
-	/*for (int i = 0; i < sl; i++) {
-		res.SetBit(0, i);
-	}*/
+	if (sl >= Size_charater * Size_Num) {
+		return res;
+	}
 	bool sign = GetBit(Size_charater * Size_Num - 1);
+
+	//Nếu dịch hơn 128 bit thì chuỗi bit thu được là 0000 hoặc 1111 tùy thuộc vào bit dấu
+	if (sl >= Size_charater * Size_Num) {
+		//Nếu là  số âm thì là dãy 1111 và ngược lại
+		if (sign == 1) { 
+			for (int i = 0; i < Size_charater * Size_Num; i++) {
+				res.SetBit(1, i);
+			}
+		}
+		return res;
+
+	}
 	for (int i = sl; i < Size_charater * Size_Num; i++)
 	{
 		res.SetBit(GetBit(i), (i - sl));
@@ -665,18 +705,42 @@ QInt QInt::operator >>(int sl) {
 	return res;
 }
 
-//Toán Tử dịch trái
-QInt QInt::operator<<(int sl) {
-
+QInt QInt::SHR(int sl) {
 	QInt res = _zero;
-	bool sign = GetBit(Size_charater * Size_Num - 1);
-	for (int i = 0; i < Size_charater * Size_Num; i++)
+
+	//Nếu dịch từ 128 bit trở lên thì kết quả trả về là dãy bit 0
+	if (sl >= Size_charater * Size_Num) {
+		return res;
+	}
+
+	for (int i = sl; i < Size_charater * Size_Num; i++)
+	{
+		res.SetBit(GetBit(i), (i - sl));
+	}
+	//Các bit còn lại bên trái chưa được set sẽ mặc định là bit 0 (đúng tính chất dịch trái)
+
+	return res;
+}
+
+//Toán tử dịch trái
+QInt QInt::operator<<(int sl) {
+	QInt res = _zero;
+
+	//Nếu dịch từ 128 bit trở lên thì kết quả trả về là dãy bit 0
+	if (sl >= Size_charater * Size_Num) {
+		return res;
+	}
+
+	for (int i = 0; i < Size_charater * Size_Num - sl; i++)
 	{
 		res.SetBit(GetBit(Size_charater * Size_Num - 1 - i - sl), Size_charater * Size_Num - 1 - i);
 	}
-	SetBit(sign, Size_charater * Size_Num - 1);
+	//Các bit còn lại bên phải chưa được set sẽ mặc định là bit 0 (đúng tính chất dịch trái)
+
 	return res;
 }
+
+
 
 //---------------KẾT THÚC CÁC HÀM TOÁN TỬ-----------------------------//
 

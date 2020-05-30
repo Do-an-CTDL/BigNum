@@ -104,11 +104,11 @@ public:
 	QInt operator ~();
 
 	//Toán tử gán bằng mặc định là chỉ gán bằng chuỗi nhị phân và dec
-	void operator = (QInt);
+	bool operator == (QInt);
 
 	//Toán tử + 2 số QInt
 	QInt operator +(QInt&);
-	QInt Add(QInt&);
+	static QInt Add(QInt&, QInt&, bool&);
 
 	//Toán tử - 2 số QInt
 	QInt operator -(QInt&);
@@ -130,9 +130,11 @@ public:
 
 	//Toán tử dịch phải
 	QInt operator >> (int i);
+	QInt SHR(int i);
 
 	//Toán tử dịch trái
 	QInt operator << (int i);
+	
 
 	//-----------KẾT THÚC CÁC HÀM TOÁN TỬ---------------//
 
