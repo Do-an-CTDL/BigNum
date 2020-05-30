@@ -16,7 +16,7 @@ using namespace std;
 // 128 bit -> 4x 32 bit để quản lý
 class QInt {
 public:
-	static QInt _zero, _one, _max;
+	static QInt _zero, _one, _max, _min;
 private:
 
 	unsigned int _data[Size_Num];
@@ -28,7 +28,7 @@ public:
 	static void InitZero();
 	static void InitOne();
 	static void InitMAX();
-	
+	static void InitMin();
 
 	//Khởi tạo tham số mặc định
 	QInt();

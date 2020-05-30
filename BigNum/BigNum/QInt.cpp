@@ -20,7 +20,7 @@ void QInt::InitMAX() {
 
 }
 
-//Khởi tạo bảng min
+//Khởi tạo số 1
 void QInt::InitOne() {
 
 	_one._data[0] = 1;
@@ -28,6 +28,15 @@ void QInt::InitOne() {
 	_one._data[2] = 0;
 	_one._data[3] = 0;
 
+}
+
+void QInt::InitMin() {
+	_min._data[0] = 0;
+	_min._data[1] = 0;
+	_min._data[2] = 0;
+	_min._data[3] = 0;
+
+	_min.SetBit(1, Size_charater * Size_Num - 1);
 }
 
 
@@ -564,12 +573,10 @@ QInt QInt::operator*(QInt b) {
 QInt QInt::operator/(QInt b) {
 	//Kiểm tra TH tràn
 	//Khi -128/-1 = 128 => Tràn số
-	//Tạo số -128
-	QInt check_128 = _zero;
-	check_128.SetBit(1, Size_charater * Size_Num - 1);
+
+	QInt check_128 = _min; 	//Tạo số -128
 	//Tạo số -1
-	QInt check_1 = _zero;
-	check_1.SetBit(1, 0);
+	QInt check_1 = _one;
 	check_1.ConvertOpposite2();
 
 	if (*this == check_128 && b == check_1) {

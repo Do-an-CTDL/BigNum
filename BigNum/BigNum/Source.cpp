@@ -10,6 +10,7 @@ int main() {
 	QInt::InitOne();
 	QInt::InitZero();
 	QInt::InitMAX();
+	QInt::InitMin();
 	
 
 	Input();
