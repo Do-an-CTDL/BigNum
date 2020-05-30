@@ -63,6 +63,10 @@ int CheckOperand(string  a) {
 		return 9;
 	if (a == "/")
 		return 10;
+	if (a == "^")
+		return 11;
+	if (a == "|")
+		return 11;
 	return 0;
 }
 
@@ -185,7 +189,7 @@ string Solve(string s) {
 
 		if (operand == 9) {
 
-		
+			a = a * b;
 		}
 
 		if (operand == 10) {
@@ -193,10 +197,19 @@ string Solve(string s) {
 			a = a / b;
 		}
 
+		if (operand == 11) {
+
+			a = a ^ b;
+		}
+
+		if (operand == 12) {
+
+			a = a | b;
+		}
 		return ConvertQIntToBase(a);
 	}
 
 	
-	return "0";
+	return "";
 }
 

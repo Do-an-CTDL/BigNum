@@ -33,6 +33,8 @@ public:
 	//Khởi tạo tham số mặc định
 	QInt();
 
+	
+
 	//lấy hệ số đích
 	int GetBase();
 
@@ -138,7 +140,6 @@ public:
 	//------------PHÉP XOAY ROR VÀ ROL-------------------//
 	QInt ROR();
 	QInt ROL();
-
 	
 	
 	//------------KẾT THÚC PHÉP XOAY BIT------------------//

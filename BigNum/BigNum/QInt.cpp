@@ -41,6 +41,9 @@ QInt::QInt() {
 	_base = 2;
 }
 
+
+
+
 //Lấy hệ số đích
 int QInt::GetBase() {
 
@@ -485,13 +488,13 @@ QInt QInt::operator + (QInt& a) {
 	}
 
 	//Kiem tra du
-	if (remember != 0) {
+	/*if (remember != 0) {
 		result._data[0] = 0;
 		result._data[1] = 0;
 		result._data[2] = 0;
 		result._data[3] = 0;
 
-	}
+	}*/
 
 	return result;
 }
@@ -515,8 +518,9 @@ QInt QInt::operator*(QInt Q) {
 	QInt oposite = *this;
 	oposite.ConvertOpposite2(); //Số âm của M
 
-	for (int i = Size_charater * Size_Num; i > 0; i--) {
-		bool Q0 = B.GetBit(Size_charater * Size_Num - 1);
+	
+	for (int i = 0; i < Size_charater * Size_Num; i++) {
+		bool Q0 = B.GetBit(0);
 		if (Q0 == 0) {
 			if (Q1 == 1) {
 				A = A.Add(*this); //A += M 
@@ -526,19 +530,22 @@ QInt QInt::operator*(QInt Q) {
 			if (Q1 == 0) {
 				A = A.Add(oposite); //A -= M
 			}
+			
 		}
 		//Dịch bit số học mảng [A, Q, Q1]
 		Q1 = Q0;
+		bool a = A.GetBit(0);
+		bool a1 = A.GetBit(Size_charater * Size_Num - 1);
 		B = B >> 1;
-		B.SetBit(A.GetBit(Size_charater * Size_Num - 1), 0);
 		A = A >> 1;
-		A.SetBit(A.GetBit(1), 0);
+		B.SetBit(a, Size_charater * Size_Num - 1);
+		A.SetBit(a1, Size_charater * Size_Num - 1);
 	}
 	//Kết quả phép nhân là mảng [A, Q] có độ lớn là 256 bit
 	//Check tràn số
 	int check = 0;
-	int posA, posQ = 0;
-	for (posA; posA < 4; posA++) {
+	int posA = 0, posQ = 0;
+	for (posA = 0; posA < 4; posA++) {
 		if (A._data[posA] != 0) {
 			check += 3 - posA;
 			break;
@@ -556,19 +563,8 @@ QInt QInt::operator*(QInt Q) {
 		res._data[2] = 0;
 		res._data[3] = 0;
 	}
-	else {
-		int check = 3;
-		for (int i = 3; i >= posA; i--) {
-			res._data[i] = Q._data[i];
-			check--;
-		}
-		for (int i = 3; i >= posQ; i--) {
-			res._data[check] = A._data[i];
-			check--;
-		}
-	}
 
-	return res;
+	return B;
 }
 
 //Toán tử chia
@@ -582,7 +578,7 @@ QInt QInt::operator/(QInt Q) {
 
 	for (int i = Size_charater * Size_Num; i > 0; i--) {
 		A = A << 1;
-		A.SetBit(B.GetBit(0), Size_charater * Size_Num);
+		A.SetBit(B.GetBit(0), Size_charater * Size_Num - 1);
 		B = B << 1;
 		A = A.Add(oposite); //A = A - M
 		if (A.GetBit(0) == 1) {
@@ -655,10 +651,17 @@ QInt QInt::operator >>(int sl) {
 	/*for (int i = 0; i < sl; i++) {
 		res.SetBit(0, i);
 	}*/
+	bool sign = GetBit(Size_charater * Size_Num - 1);
 	for (int i = sl; i < Size_charater * Size_Num; i++)
 	{
-		res. SetBit(GetBit(i), i - sl);
+		res.SetBit(GetBit(i), (i - sl));
 	}
+	//Moi lan set 1 bit
+	for (int i = Size_charater * Size_Num - sl; i < Size_charater * Size_Num; i++)
+	{
+		res.SetBit(sign, i);
+	}
+	
 	return res;
 }
 
@@ -666,14 +669,12 @@ QInt QInt::operator >>(int sl) {
 QInt QInt::operator<<(int sl) {
 
 	QInt res = _zero;
-	/*for (int i = Size_charater * Size_Num; i < sl; i--) {
-		res.SetBit(0, i);
-	}*/
-
+	bool sign = GetBit(Size_charater * Size_Num - 1);
 	for (int i = 0; i < Size_charater * Size_Num; i++)
 	{
 		res.SetBit(GetBit(Size_charater * Size_Num - 1 - i - sl), Size_charater * Size_Num - 1 - i);
 	}
+	SetBit(sign, Size_charater * Size_Num - 1);
 	return res;
 }
 
@@ -695,7 +696,7 @@ QInt QInt::ROR()
 	}
 
 	//Set bit trái nhất thành bit phải nhất
-	SetBit(bit, Size_charater * Size_Num);
+	SetBit(bit, Size_charater * Size_Num - 1);
 
 	return *this;
 }
@@ -720,3 +721,4 @@ QInt QInt::ROL() {
 
 	return *this;
 }
+

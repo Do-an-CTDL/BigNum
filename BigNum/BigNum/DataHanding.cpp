@@ -94,7 +94,7 @@ string MulString(string a, string b) {
 		return a;
 
 	a = Ease0InHead(a);
-	a = Ease0InHead(b);
+	b = Ease0InHead(b);
 	
 	string res = "0";
 
@@ -109,12 +109,12 @@ string MulString(string a, string b) {
 		for (int iA = a.size() - 1; iA >= 0; iA--){
 			unsigned int mul = tmp[j] - '0' + (a[iA] - '0') * (b[iB] - '0');
 			tmp[j++] = (mul % 10) + '0';
-			tmp = char((mul / 10) + '0') + tmp;
+			tmp += char((mul / 10) + '0') ;
 		}
 
-		/*for (int i = 0; i < tmp.size() / 2; i++){
+		for (int i = 0; i < tmp.size() / 2; i++){
 			swap(tmp[i], tmp[tmp.length() - i - 1]);
-		}*/
+		}
 		res = AdditionString(res, tmp);
 		tmp = tmp2 + "0";
 		tmp2 = tmp;
