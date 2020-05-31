@@ -617,32 +617,40 @@ QInt QInt::operator/(QInt b) {
 		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
 	}
 
-	QInt A = _zero; //Mảng nhớ hỗ trợ chia
-	bool tmp; //Bit nhớ (không sử dụng)
-	QInt oposite = M; //số đối của M
+	int nbit = M.GetnBit(); //Số bit biểu diễn của số M
+	QInt res = _zero; //Biến kết quả
+	res._base =  _base;
+	QInt oposite = M; // Khởi tạo số đối của M 
 	oposite.ConvertOpposite2();
-	
 
-	for (int i = Size_charater * Size_Num; i > 0; i--) {
-		A = A << 1;
-		A.SetBit(Q.GetBit(Size_charater * Size_Num - 1), 0);
-		M = M << 1;
-		A = Add(A, oposite, tmp); //A = A - M
-		if (A.GetBit(Size_charater * Size_Num - 1) == 1) {
-			Q.SetBit(0, 0);
-			A = Add(A, M, tmp); // A = A + M
+	QInt A = Q; //Gán A = Q
+	A = A.SHR(Size_charater * Size_Num - nbit); //Lấy nbit đầu từ trái sang của Q
+	Q = Q << (nbit); //Dịch Q đi nbit
+	for (int i = 0; i < Size_charater * Size_Num - nbit; i++) {
+		bool remember = 0;
+		QInt tmp = _zero;
+		tmp = Add(A, oposite, remember); //Lấy A - M
+		//Lấy bit dấu của kết quả
+		//Nếu là 0 tức là A > M và ngược lại
+		if (tmp.GetBit(Size_charater * Size_Num - 1) == 0) { 
+			A = tmp; //Gán kết quả vào mảng A
+			res = res << (1);
+			res.SetBit(1, 0);
 		}
 		else {
-			Q.SetBit(1, 0);
+			res = res << (1);
+			res.SetBit(0, 0);
 		}
+		A = A << 1;
+		A.SetBit(Q.GetBit(Size_charater * Size_Num - 1), 0);
+		Q = Q << 1;
 	}
-	//Kết quả phép chia là mảng B
-	//Kiểm tra dấu của phép nhân
+
 	if (sign == 1) {
-		Q.ConvertOpposite2();
+		res.ConvertOpposite2();
 	}
-	
-	return Q;
+
+	return res;
 }
 
 //Toán tử and
