@@ -619,14 +619,13 @@ QInt QInt::operator/(QInt b) {
 
 	int nbit = M.GetnBit(); //Số bit biểu diễn của số M
 	QInt res = _zero; //Biến kết quả
-	res._base =  _base;
 	QInt oposite = M; // Khởi tạo số đối của M 
 	oposite.ConvertOpposite2();
 
 	QInt A = Q; //Gán A = Q
 	A = A.SHR(Size_charater * Size_Num - nbit); //Lấy nbit đầu từ trái sang của Q
 	Q = Q << (nbit); //Dịch Q đi nbit
-	for (int i = 0; i < Size_charater * Size_Num - nbit; i++) {
+	for (int i = 0; i <= Size_charater * Size_Num - nbit; i++) {
 		bool remember = 0;
 		QInt tmp = _zero;
 		tmp = Add(A, oposite, remember); //Lấy A - M
@@ -649,7 +648,7 @@ QInt QInt::operator/(QInt b) {
 	if (sign == 1) {
 		res.ConvertOpposite2();
 	}
-
+	res._base = _base;
 	return res;
 }
 

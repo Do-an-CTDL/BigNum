@@ -1,0 +1,4 @@
+﻿  QInt.cpp
+D:\BigNum\BigNum\BigNum\QInt.cpp(19,27): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+D:\BigNum\BigNum\BigNum\QInt.cpp(167,28): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  BigNum.vcxproj -> D:\BigNum\BigNum\x64\Debug\BigNum.exe
