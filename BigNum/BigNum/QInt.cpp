@@ -491,7 +491,7 @@ QInt QInt::operator = (QInt a) {
 //Toán tử cộng
 QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 	QInt result = _zero;
-	result._base = a._base;
+	
 
 	bool  remember = 0;
 	int res_add;
@@ -519,8 +519,7 @@ QInt QInt::operator + (QInt& a) {
 	 
 	QInt tran = _zero;
 	QInt result = _zero;
-	result._base = _base;
-	tran._base = _base;
+	
 
 	bool  remember = 0;
 	int res_add;
@@ -565,7 +564,7 @@ QInt QInt::operator*(QInt b) {
 	QInt A = _zero; //Mảng nhớ phụ
 
 	QInt res = _zero; //Kết quả phép nhân
-	A._base = res._base = _base;
+	
 
 	bool sign = 0; //Bit dấu 
 	//Check dấu kết quả
@@ -609,10 +608,7 @@ QInt QInt::operator*(QInt b) {
 		demNhan++;
 	}
 
-	//Check tràn số
-	/*if (A == _zero && remember == 0) {
-		res = Q;
-	}*/
+
 	//Kiểm tra dấu của phép nhân
 	if (sign == 1) {
 		A.ConvertOpposite2();
@@ -643,7 +639,6 @@ QInt QInt::operator/(QInt b) {
 
 	if (*this == check_128 && b == check_1) {
 		QInt res = _zero;
-		res._base = _base;
 		return res;
 	}
 
@@ -694,7 +689,7 @@ QInt QInt::operator/(QInt b) {
 	if (sign == 1) {
 		res.ConvertOpposite2();
 	}
-	res._base = _base;
+	
 	return res;
 }
 
@@ -753,7 +748,7 @@ QInt QInt::operator ^ (QInt& a)
 QInt QInt::operator >>(int sl) {
 
 	QInt res = _zero;
-	res._base = _base;
+	
 
 
 	if (sl >= Size_charater * Size_Num) {
@@ -788,7 +783,7 @@ QInt QInt::operator >>(int sl) {
 
 QInt QInt::SHR(int sl) {
 	QInt res = _zero;
-	res._base = _base;
+
 
 
 	//Nếu dịch từ 128 bit trở lên thì kết quả trả về là dãy bit 0
