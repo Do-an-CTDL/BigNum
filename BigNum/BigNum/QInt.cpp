@@ -150,7 +150,7 @@ void QInt::ConvertInputtoData(string a, int flag) {
 		//lien tuc chia cho 2
 		int balance = 0; //so du
 		int pos = 0; // vị trí cần set bit
-		while (a != "") {
+		while (a != "0") {
 			a = DivisionString2(a, balance);
 			SetBit(balance, pos++);
 		}
@@ -455,6 +455,10 @@ QInt QInt::operator~() {
 
 //Toán tử bằng
 bool QInt::operator ==(QInt a) {
+
+	if (_base != a._base)
+		return 0;
+
 	for (int i = 0; i < Size_Num; i++) {
 		if (_data[i] != a._data[i]) {
 			return 0;
@@ -598,6 +602,7 @@ QInt QInt::operator/(QInt b) {
 
 	if (*this == check_128 && b == check_1) {
 		QInt res = _zero;
+		res._base = _base;
 		return res;
 	}
 

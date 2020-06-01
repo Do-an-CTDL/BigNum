@@ -110,20 +110,30 @@ string Solve(string s) {
 	
 	if (CountQuestion == 2) {	
 
-		Out = atoi(Q2.c_str());
-
 		string x;
 		ss >> x;
 		x = Ease0InHead(x);
-		QInt a(x, atoi(Q1.c_str()), atoi(Q2.c_str()));
-		return ConvertQIntToBase(a);
+
+		int checkOperand = CheckOperand(x);
+
+		if (checkOperand == 0) {
+
+			Out = atoi(Q2.c_str());
+
+
+			QInt a(x, atoi(Q1.c_str()), atoi(Q2.c_str()));
+			return ConvertQIntToBase(a);
+		}
 	}
 	else {
 
 		Out = atoi(Q1.c_str());
 	}
 
+	stringstream ss1(s);
 
+	ss1 >> Q1;
+	ss1 >> Q2;
 
 	//Trường hợp chỉ có 1 chỉ thị trừ chỉ thị + - * /
 
@@ -135,8 +145,8 @@ string Solve(string s) {
 
 		//Đọc dữ liệu
 		string x;
-		ss >> x;
-
+		ss1 >> x;
+		
 		x = Ease0InHead(x);
 		QInt a(x, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
@@ -152,14 +162,14 @@ string Solve(string s) {
 
 	//Trường hợp là các toán tử cộng trừ nhân chia 
 	string Q3;
-	ss >> Q3;
+	ss1 >> Q3;
 	operand = CheckOperand(Q3);
 	if (operand != 0 && operand > 4) {
 
 		QInt a(Q2, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
 		string Q4;// Đối số thứ 4
-		ss >> Q4;
+		ss1 >> Q4;
 		Q4 = Ease0InHead(Q4);
 		if (operand == 5 || operand == 6) {
 

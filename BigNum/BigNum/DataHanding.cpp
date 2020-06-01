@@ -33,8 +33,10 @@ string Ease0InHead(string a) {
 
 
 	int i = 0;
+	
 	if (a[0] == '-')
 		i = 1;
+
 	while (i < a.size()) {
 
 		if (a[i] == '0')
@@ -43,6 +45,10 @@ string Ease0InHead(string a) {
 			break;
 		}
 	}
+
+	if (a == "")
+		a = "0";
+
 	string b = a;
 
 	return b;
@@ -63,13 +69,13 @@ string DivisionString2(string a, int& balance) {
 		Res += stoi(m_Balance) / 2 + '0';
 		m_Balance = stoi(m_Balance) % 2 + '0'; //Lấy số dư còn lại
 
-		if (m_Balance == "0") //Nếu dư 0
-			m_Balance = "";
+		//if (m_Balance == "0") //Nếu dư 0
+		//	m_Balance = "";
 	}
 
 	//Xóa những kí tự 0 thừa ở đầu
 	Res = Ease0InHead(Res);
-	if (m_Balance == "")
+	if (m_Balance == "0")
 		balance = 0;
 	else
 		balance = 1;
