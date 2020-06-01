@@ -69,6 +69,14 @@ int QInt::GetBase() {
 	return _base;
 }
 
+void QInt::SetBaseStatic(int base)
+{
+	_zero._base = base;
+	_one._base = base;
+	_max._base = base;
+	_min._base = base;
+}
+
 
 
 QInt::QInt(string a, int baseIn, int baseOut) {
@@ -351,16 +359,18 @@ string QInt::DecToHex() {
 	for (int i = 0; i < Size_Num; i++) {
 
 		//lay het so bit 
-		while (tmp._data[i]) {
-			
+		int dem = 0;
+		while (dem != Size_charater) {
+
 			//Lay 4 bit lien tiep
-			string Get4bit ;
+			string Get4bit;
 			for (int j = 0; j < 4; j++) {
 
 				if (tmp._data[i]) {
-					Get4bit = char(int(tmp.GetBit(i*Size_charater) + '0')) + Get4bit;
+					Get4bit = char(int(tmp.GetBit(i * Size_charater) + '0')) + Get4bit;
 					tmp._data[i] >>= 1;
 				}
+				dem++;
 			}
 			char Get10to16 = ConvertBinToHex(Get4bit);
 			Res = Get10to16 + Res;
@@ -368,6 +378,9 @@ string QInt::DecToHex() {
 
 
 	}
+
+	Res = Ease0InHead(Res);
+
 
 
 	return Res;
@@ -385,7 +398,8 @@ string QInt::BinToHex()
 	for (int i = 0; i < Size_Num; i++) {
 
 		//lay het so bit 
-		while (tmp._data[i]) {
+		int dem = 0;
+		while (dem != Size_charater) {
 
 			//Lay 4 bit lien tiep
 			string Get4bit;
@@ -395,6 +409,7 @@ string QInt::BinToHex()
 					Get4bit = char(int(tmp.GetBit(i * Size_charater) + '0')) + Get4bit;
 					tmp._data[i] >>= 1;
 				}
+				dem++;
 			}
 			char Get10to16 = ConvertBinToHex(Get4bit);
 			Res = Get10to16 + Res;
@@ -402,6 +417,8 @@ string QInt::BinToHex()
 
 
 	}
+
+	Res = Ease0InHead(Res);
 
 
 	return Res;
@@ -411,23 +428,16 @@ string QInt::BinToHex()
 // Chuỗi hex đã được đưa vào data bây giờ chỉ cần chuyển theo data là xong
 string QInt::HexToDec() {
 
-	QInt tmp = *this;
-	
-	string res; // kêt quả
-	string Pow = "1";
-	for (int i = 0; i < Size_Num; i++) {
 
-		//cho code he 2
-
+	string res;
+	for (int i = 0; i < Size_Num; i++)
+	{
+		res = AdditionString(res, MulString(String(_data[i]), Power("2", Size_charater * i)));
 	}
 
-	for (int i = 0; i < res.size(); i++) {
 
 
-		cout << res[i];
-	}
-
-	return "0";
+	return res;
 }
 
 
@@ -467,6 +477,17 @@ bool QInt::operator ==(QInt a) {
 	return 1;
 }
 
+QInt QInt::operator = (QInt a) {
+
+
+	_base = a._base;
+
+	for (int i = 0; i < Size_charater * Size_Num; i++)
+		SetBit(a.GetBit(i), i);
+
+	return *this;
+}
+
 //Toán tử cộng
 QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 	QInt result = _zero;
@@ -496,9 +517,10 @@ QInt QInt::Add(QInt& a, QInt& b, bool& bit) {
 
 QInt QInt::operator + (QInt& a) {
 	 
+	QInt tran = _zero;
 	QInt result = _zero;
 	result._base = _base;
-
+	tran._base = _base;
 
 	bool  remember = 0;
 	int res_add;
@@ -519,14 +541,13 @@ QInt QInt::operator + (QInt& a) {
 		}
 	}
 
-	//Kiem tra du
-	if (remember != 0) {
-		result._data[0] = 0;
-		result._data[1] = 0;
-		result._data[2] = 0;
-		result._data[3] = 0;
+	//Kiem tra Tran
+	
+	if (GetBit(Size_charater * Size_Num - 1) == 1 && a.GetBit(Size_charater * Size_Num - 1) == 1 && result.GetBit(Size_charater * Size_Num - 1) == 0)
+		return tran;
 
-	}
+	if (GetBit(Size_charater * Size_Num - 1) == 0 && a.GetBit(Size_charater * Size_Num - 1) == 0 && result.GetBit(Size_charater * Size_Num - 1) == 1)
+		return tran;
 
 	return result;
 }
@@ -555,12 +576,25 @@ QInt QInt::operator*(QInt b) {
 	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
 	QInt M = *this; 
 	QInt Q = b;
+
+	//Kiem tra tran
+
+	if (M.HexToDec() == "-1" && Q == _min)
+		return A;
+
+	if (Q.HexToDec() == "-1" && M == _min)
+		return A;
+
+
+
 	if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
 		M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
 	}
 	if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
 		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
 	}
+
+
 
 	int demNhan = 0; // Dem so lan da nhan
 	//Bắt đầu thực hiện phép nhân
@@ -584,7 +618,14 @@ QInt QInt::operator*(QInt b) {
 		A.ConvertOpposite2();
 	}
 
-	return A;
+
+	//Kiểm tra tran
+
+	if (*this == (A / b))
+		return A;
+
+
+	return _zero;
 
 }
 
@@ -731,6 +772,7 @@ QInt QInt::operator >>(int sl) {
 		return res;
 
 	}
+
 	for (int i = sl; i < Size_charater * Size_Num; i++)
 	{
 		res.SetBit(GetBit(i), (i - sl));
@@ -765,8 +807,8 @@ QInt QInt::SHR(int sl) {
 
 //Toán tử dịch trái
 QInt QInt::operator<<(int sl) {
-	QInt res = _zero;
-
+	QInt res;
+	res = _zero;
 	//Nếu dịch từ 128 bit trở lên thì kết quả trả về là dãy bit 0
 	if (sl >= Size_charater * Size_Num) {
 		return res;
@@ -812,7 +854,7 @@ QInt QInt::ROL() {
 
 
 	//Lấy bit trái nhất
-	bool bit = GetBit(Size_charater * Size_Num);
+	bool bit = GetBit(Size_charater * Size_Num - 1);
 
 	//Đôn bit lên sang trái 1 đơn vị
 	for (int i = Size_charater * Size_Num - 1; i >= 0; i--)

@@ -7,7 +7,8 @@
 
 
 //Hàm nhập dữ liệu từ file
-void Input();
+//void Input(ifstream &, ofstream&);
+void Input(string ,string);
 
 
 //Hàm xử lý đầu vào và trả ra kết quả

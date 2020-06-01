@@ -39,6 +39,9 @@ public:
 	//lấy hệ số đích
 	int GetBase();
 
+	//Set he so cho bien static
+	static void SetBaseStatic(int );
+
 	//hàm khởi tạo 3 đối số
 	//chuỗi dữ liệu, base đầu vào, base đầu ra
 	QInt(string, int, int);
@@ -106,6 +109,9 @@ public:
 
 	//Toán tử gán bằng mặc định là chỉ gán bằng chuỗi nhị phân và dec
 	bool operator == (QInt);
+
+	//Toán tử gán bằng
+	QInt operator = (QInt);
 
 	//Toán tử + 2 số QInt
 	QInt operator +(QInt&);

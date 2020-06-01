@@ -2,20 +2,23 @@
 
 
 //Hàm đọc dữ liệu từ file
-void Input() {
+void Input(string input, string output){//ifstream& In, ofstream& Out) {
 
-	ifstream In("input.txt");
-	ofstream Out("output.txt");
+
+	ifstream In(input);
+	ofstream Out(output);
+
 	while (!In.eof()) {
 
 		string s;
 		string res;
 		getline(In, s);
 
+		if (s == "")
+			break;
 
 		res = Solve(s);
 		Out << res << "\n";
-		cout << res << "\n";
 	}
 
 	In.close();
@@ -66,7 +69,7 @@ int CheckOperand(string  a) {
 	if (a == "^")
 		return 11;
 	if (a == "|")
-		return 11;
+		return 12;
 	return 0;
 }
 
@@ -120,7 +123,7 @@ string Solve(string s) {
 
 			Out = atoi(Q2.c_str());
 
-
+			QInt::SetBaseStatic(atoi(Q2.c_str()));
 			QInt a(x, atoi(Q1.c_str()), atoi(Q2.c_str()));
 			return ConvertQIntToBase(a);
 		}
@@ -148,6 +151,7 @@ string Solve(string s) {
 		ss1 >> x;
 		
 		x = Ease0InHead(x);
+		QInt::SetBaseStatic(atoi(Q1.c_str()));
 		QInt a(x, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
 		if (operand == 2)
@@ -166,6 +170,7 @@ string Solve(string s) {
 	operand = CheckOperand(Q3);
 	if (operand != 0 && operand > 4) {
 
+		QInt::SetBaseStatic(atoi(Q1.c_str()));
 		QInt a(Q2, atoi(Q1.c_str()), atoi(Q1.c_str()));
 
 		string Q4;// Đối số thứ 4
