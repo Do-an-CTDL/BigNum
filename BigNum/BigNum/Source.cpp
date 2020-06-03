@@ -6,7 +6,7 @@ QInt QInt::_zero;
 QInt QInt::_max;
 QInt QInt::_min;
 
-int main(){//int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 	
 	QInt::InitOne();
 	QInt::InitZero();
@@ -14,23 +14,19 @@ int main(){//int argc, char* argv[]) {
 	QInt::InitMin();
 	
 
-	Input("input.txt", "output.txt");
+	//Input("input.txt", "output.txt");
 
-	/*ifstream in;
-	ofstream out;
 	if (argc < 3) {
 		cout << "The format must be correct" << endl;
 		cout << "Format: <name>.exe <input>.exe <output>.txt" << endl;
 		return 0;
 	}
 	else {
-		in.open(argv[1]);
-		out.open(argv[2]);
-		Input(in, out);
-
-		in.close();
-		out.close();
-	}*/
+		
+		//Input("input.txt", "output.txt");
+		Input(argv[1], argv[2]);
+		
+	}
 	
 	
 

@@ -331,7 +331,13 @@ string QInt::BinToDec() {
 	bool sign = 0;
 	if (GetBit(Size_charater * Size_Num - 1)) {
 		sign = 1;
-		ConvertOpposite2();
+		//Kiểm tra test chết khi 10000000000 toàn 0
+		
+		if (_data[0] == 0 && _data[1] == 0 && _data[2] == 0 && _data[3] == pow(2, 31)) {
+
+		}
+		else
+			ConvertOpposite2();
 	}
 
 

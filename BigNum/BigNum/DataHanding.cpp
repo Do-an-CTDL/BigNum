@@ -110,16 +110,17 @@ string MulString(string a, string b) {
 
 	string tmp = "0", tmp2 = "0";
 
-	for (int iB = b.size() - 1; iB >= 0; iB--){
-		j = tmp.length() - 1;
+	for (int posB = b.size() - 1; posB >= 0; posB--){
+		j = tmp.size() - 1;
 		for (int iA = a.size() - 1; iA >= 0; iA--){
-			unsigned int mul = tmp[j] - '0' + (a[iA] - '0') * (b[iB] - '0');
+			unsigned int mul = tmp[j] - '0' + (a[iA] - '0') * (b[posB] - '0');
 			tmp[j++] = (mul % 10) + '0';
 			tmp += char((mul / 10) + '0') ;
 		}
 
+		//Dao chuoi lai
 		for (int i = 0; i < tmp.size() / 2; i++){
-			swap(tmp[i], tmp[tmp.length() - i - 1]);
+			swap(tmp[i], tmp[tmp.size() - i - 1]);
 		}
 		res = AdditionString(res, tmp);
 		tmp = tmp2 + "0";
@@ -138,30 +139,31 @@ string AdditionString(string A, string B)
 {
 	A = Ease0InHead(A);
 	B = Ease0InHead(B);
-	bool isFloat = 0;
 	int posA;
 	int posB;
 
 	string result = "";
 	int j = 0;
 	
-	posA = A.length();
-	posB = B.length();
-
-	while (posA < posB)
-	{
-		A = "0" + A;
-		posA++;
-	}
+	posA = A.size();
+	posB = B.size();
 	while (posB < posA)
 	{
 		B = "0" + B;
 		posB++;
 	}
 
+	while (posA < posB)
+	{
+		A = "0" + A;
+		posA++;
+	}
+
+
 
 	for (j = 0; j < A.length(); result += "0", j++);
-	for (int i = A.length() - 1; i >= 0; i--)
+
+	for (int i = A.size() - 1; i >= 0; i--)
 	{
 		int sum = (result[i] - '0') + (A[i] - '0') + (B[i] - '0');
 		result[i] = (sum % 10) + '0';
@@ -188,7 +190,7 @@ string Power(string a, int x) {
 	string res = "1";
 
 	for (int i = 0; i < x; i++) {
-		//res = Ease0InHead(res);
+	
 		res = MulString(res, a);
 	}
 	return res;
