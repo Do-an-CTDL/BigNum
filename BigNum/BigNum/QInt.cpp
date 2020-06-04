@@ -548,10 +548,10 @@ QInt QInt::operator + (QInt& a) {
 
 	//Kiem tra Tran
 	
-	if (GetBit(Size_charater * Size_Num - 1) == 1 && a.GetBit(Size_charater * Size_Num - 1) == 1 && result.GetBit(Size_charater * Size_Num - 1) == 0)
+	if (GetBit(Size_charater * Size_Num - 1) == 1 && a.GetBit(Size_charater * Size_Num - 1) == 1 && result.GetBit(Size_charater * Size_Num - 1) == 0 && _base != 16)
 		return tran;
 
-	if (GetBit(Size_charater * Size_Num - 1) == 0 && a.GetBit(Size_charater * Size_Num - 1) == 0 && result.GetBit(Size_charater * Size_Num - 1) == 1)
+	if (GetBit(Size_charater * Size_Num - 1) == 0 && a.GetBit(Size_charater * Size_Num - 1) == 0 && result.GetBit(Size_charater * Size_Num - 1) == 1 && _base != 16)
 		return tran;
 
 	return result;
@@ -571,34 +571,39 @@ QInt QInt::operator*(QInt b) {
 
 	QInt res = _zero; //Kết quả phép nhân
 	
-
+	QInt M = *this;
+	QInt Q = b;
 	bool sign = 0; //Bit dấu 
 	//Check dấu kết quả
-	if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
-		sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
+	if (_base != 16) {
+		if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
+			sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
+		}
+
+		//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
+		
+
+		//Kiem tra tran
+
+		if (M.HexToDec() == "-1" && Q == _min)
+			return A;
+
+		if (Q.HexToDec() == "-1" && M == _min)
+			return A;
+
+		if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
+			M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+		}
+		if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
+			Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+		}
+
+
 	}
 
-	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
-	QInt M = *this; 
-	QInt Q = b;
+	
 
-	//Kiem tra tran
-
-	if (M.HexToDec() == "-1" && Q == _min)
-		return A;
-
-	if (Q.HexToDec() == "-1" && M == _min)
-		return A;
-
-
-
-	if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
-		M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
-	}
-	if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
-		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
-	}
-
+	
 
 
 	int demNhan = 0; // Dem so lan da nhan
@@ -616,7 +621,7 @@ QInt QInt::operator*(QInt b) {
 
 
 	//Kiểm tra dấu của phép nhân
-	if (sign == 1) {
+	if (sign == 1 && _base != 16) {
 		A.ConvertOpposite2();
 	}
 
@@ -640,29 +645,35 @@ QInt QInt::operator/(QInt b) {
 
 	QInt check_128 = _min; 	//Tạo số -128
 	//Tạo số -1
-	QInt check_1 = _one;
-	check_1.ConvertOpposite2();
-
-	if (*this == check_128 && b == check_1) {
-		QInt res = _zero;
-		return res;
-	}
-
 	bool sign = 0; //Bit dấu 
-	//Check dấu kết quả
-	if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
-		sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
-	}
 
-	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
 	QInt Q = *this;
 	QInt M = b;
-	if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
-		M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+	if (_base != 16) {
+		QInt check_1 = _one;
+		check_1.ConvertOpposite2();
+
+		if (*this == check_128 && b == check_1) {
+			QInt res = _zero;
+			return res;
+		}
+
+		
+		//Check dấu kết quả
+		if (this->GetBit(Size_charater * Size_Num - 1) != b.GetBit(Size_charater * Size_Num - 1)) {
+			sign = 1; //Hai số trái dấu nhau thì kết quả sẽ là 1 số âm
+		}
+
+		if (M.GetBit(Size_charater * Size_Num - 1) == 1) {
+			M.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+		}
+		if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
+			Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
+		}
 	}
-	if (Q.GetBit(Size_charater * Size_Num - 1) == 1) {
-		Q.ConvertOpposite2(); //Nếu là số âm thì chuyển lại thành số dương
-	}
+	//Lưu hai thừa số vào 2 biến M, Q để tránh mất dữ liệu
+
+	
 
 	int nbit = M.GetnBit(); //Số bit biểu diễn của số M
 	QInt res = _zero; //Biến kết quả
@@ -692,7 +703,7 @@ QInt QInt::operator/(QInt b) {
 		Q = Q << 1;
 	}
 
-	if (sign == 1) {
+	if (sign == 1 && _base != 16) {
 		res.ConvertOpposite2();
 	}
 	
